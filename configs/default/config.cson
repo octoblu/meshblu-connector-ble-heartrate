@@ -1,0 +1,19 @@
+title: "Default Configuration"
+type: "object"
+properties:
+  options:
+    title: "Options"
+    type: "object"
+    properties:
+      autoDiscover:
+        title: "Auto Discover"
+        description: "Automatically discover a heart rate monitor"
+        type: "boolean"
+        default: true
+      localName:
+        title: "Local Name"
+        description: "BLE advertised localName"
+        type: "string"
+    required: [
+      "autoDiscover"
+    ]
