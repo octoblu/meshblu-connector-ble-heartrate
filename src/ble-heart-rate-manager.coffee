@@ -1,6 +1,8 @@
-{EventEmitter} = require 'events'
-noble          = require 'noble'
-debug          = require('debug')('meshblu-connector-ble-heartrate:ble-heart-rate-manager')
+_               = require 'lodash'
+{EventEmitter}  = require 'events'
+noble           = require 'noble'
+debug           = require('debug')('meshblu-connector-ble-heartrate:ble-heart-rate-manager')
+parseHeartRate = require './heart-rate-parser'
 
 HEART_RATE_SERVICE        = '180d'
 HEART_RATE_CHARACTERISTIC = '2a37'
@@ -10,34 +12,74 @@ class BleHeartRateManager extends EventEmitter
   constructor: ->
     # hook for testing
     @noble = noble
+    {@state} = @noble
     process.on 'exit', @close
     @noble.on 'discover', @_onDiscover
+    @noble.on 'stateChange', @_onStateChange
 
   close: (callback=->) =>
     @_stopScanning()
-    @peripheral?.disconnect()
-    @characteristic?.notify false
+    @_disconnect()
     callback()
 
-  connect: ({}, callback) =>
-    @noble.on 'stateChange',  (state) =>
-      return unless state == ON_STATE
+  connect: ({@autoDiscover, @localName}, callback) =>
+    @_emit = _.throttle @emit, 500, {leading: true, trailing: false}
+    @_startScanning()
+    callback()
+
+  _disconnect: (callback=->) =>
+    if @peripheral?
+      @peripheral?.disconnect()
+      delete @peripheral
+
+    if @characteristic?
+      @characteristic.unsubscribe()
+      delete @characteristic
+
+    callback()
+
+  _onData: (rawData) =>
+    data = parseHeartRate rawData
+    @_emit 'data', heartRate: data
+
+  _onDisconnect: =>
+    console.log 'disconnect'
+    @_disconnect =>
       @_startScanning()
-      callback()
 
   _onDiscover: (peripheral) =>
-    console.log {peripheral}
     debug 'discovered', peripheral.uuid
 
     peripheral.connect (error) =>
-      debug 'connected to peripheral', error: error
+      return if error?
+      @_onPeripheral peripheral, (error) =>
+        return @_disconnect() if error?
+
+  _onPeripheral: (@peripheral, callback) =>
+    unless @autoDiscover
+      return callback new Error 'localName does not match' unless @localName == @peripheral?.advertisement?.localName
+
+    @peripheral.discoverSomeServicesAndCharacteristics [HEART_RATE_SERVICE], [HEART_RATE_CHARACTERISTIC], (error, services, [characteristic]) =>
       return callback error if error?
-      @peripheral = peripheral
-      @stopScanning()
-      callback null, @peripheral
+      return callback new Error 'Characteristic not found' unless characteristic?
+      @_onCharacteristic characteristic
+      @_stopScanning()
+      @peripheral.once 'disconnect', @_onDisconnect
+
+  _onCharacteristic: (@characteristic) =>
+    @characteristic.on 'data', @_onData
+    @characteristic.read (error, data) =>
+      return if error?
+      @_onData data
+    @characteristic.subscribe()
+
+  _onStateChange: (@state) =>
+    @_startScanning()
 
   _startScanning: =>
-    @noble.startScanning [HEART_RATE_SERVICE], false
+    return unless @state == ON_STATE
+    @_disconnect =>
+      @noble.startScanning [HEART_RATE_SERVICE], false
 
   _stopScanning: =>
     @noble.stopScanning()
