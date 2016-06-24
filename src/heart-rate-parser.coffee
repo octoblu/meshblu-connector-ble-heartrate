@@ -1,4 +1,5 @@
 parseHeartRate = (data) ->
+  return unless data?
   if data instanceof Uint8Array
     bytes = data
     #Check for data

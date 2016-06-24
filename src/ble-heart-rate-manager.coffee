@@ -1,8 +1,15 @@
-_               = require 'lodash'
-{EventEmitter}  = require 'events'
-noble           = require 'noble'
-debug           = require('debug')('meshblu-connector-ble-heartrate:ble-heart-rate-manager')
+_              = require 'lodash'
+{EventEmitter} = require 'events'
+debug          = require('debug')('meshblu-connector-ble-heartrate:ble-heart-rate-manager')
 parseHeartRate = require './heart-rate-parser'
+
+if process.env.SKIP_REQUIRE_NOBLE == 'true'
+  noble = new EventEmitter
+else
+  try
+    noble = require 'noble'
+  catch error
+    console.error error
 
 HEART_RATE_SERVICE        = '180d'
 HEART_RATE_CHARACTERISTIC = '2a37'
@@ -33,6 +40,7 @@ class BleHeartRateManager extends EventEmitter
       delete @peripheral
 
     if @characteristic?
+      @characteristic.removeAllListeners 'data'
       @characteristic.unsubscribe()
       delete @characteristic
 
@@ -43,7 +51,6 @@ class BleHeartRateManager extends EventEmitter
     @_emit 'data', heartRate: data
 
   _onDisconnect: =>
-    console.log 'disconnect'
     @_disconnect =>
       @_startScanning()
 
