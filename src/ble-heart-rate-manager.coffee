@@ -20,7 +20,6 @@ class BleHeartRateManager extends EventEmitter
     # hook for testing
     @noble = noble
     {@state} = @noble
-    process.on 'exit', @close
     @noble.on 'discover', @_onDiscover
     @noble.on 'stateChange', @_onStateChange
 

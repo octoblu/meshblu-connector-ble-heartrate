@@ -12,7 +12,7 @@ class Connector extends EventEmitter
 
   close: (callback) =>
     debug 'on close'
-    callback()
+    @bleHeartRate.close callback
 
   onConfig: (device={}, callback=->) =>
     { @options } = device
