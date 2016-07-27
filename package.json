@@ -1,6 +1,6 @@
 {
   "name": "meshblu-connector-ble-heartrate",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Meshblu Connector ",
   "homepage": "https://github.com/octoblu/meshblu-connector-ble-heartrate",
   "bugs": "https://github.com/octoblu/meshblu-connector-ble-heartrate/issues",
