@@ -1,11 +1,14 @@
 # meshblu-connector-ble-heartrate
 
+[![Build Status](https://travis-ci.org/octoblu/meshblu-connector-ble-heartrate.svg?branch=master)](https://travis-ci.org/octoblu/meshblu-connector-ble-heartrate)
+[![Test Coverage](https://codecov.io/gh/octoblu/meshblu-connector-ble-heartrate/branch/master/graph/badge.svg)](https://codecov.io/gh/octoblu/meshblu-connector-ble-heartrate)
 [![Dependency status](http://img.shields.io/david/octoblu/meshblu-connector-ble-heartrate.svg?style=flat)](https://david-dm.org/octoblu/meshblu-connector-ble-heartrate)
 [![devDependency Status](http://img.shields.io/david/dev/octoblu/meshblu-connector-ble-heartrate.svg?style=flat)](https://david-dm.org/octoblu/meshblu-connector-ble-heartrate#info=devDependencies)
-[![Build Status](http://img.shields.io/travis/octoblu/meshblu-connector-ble-heartrate.svg?style=flat&branch=master)](https://travis-ci.org/octoblu/meshblu-connector-ble-heartrate)
 [![Slack Status](http://community-slack.octoblu.com/badge.svg)](http://community-slack.octoblu.com)
 
 [![NPM](https://nodei.co/npm/meshblu-connector-ble-heartrate.svg?style=flat)](https://npmjs.org/package/meshblu-connector-ble-heartrate)
+[![Dependency status](http://img.shields.io/david/octoblu/meshblu-connector-ble-heartrate.svg?style=flat)](https://david-dm.org/octoblu/meshblu-connector-ble-heartrate)
+
 
 ## Installing
 
